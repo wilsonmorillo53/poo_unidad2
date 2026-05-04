@@ -16,7 +16,7 @@ Además de las clases base originales (`Pelicula`, `SerieDeTV` y `Documental`), 
 * **`Investigador`**: Modela a los expertos de un documental. Relacionado por **agregación** con `Documental`.
 
 ### Clases de Expansión (Paquete `ups.expancion`)
-* **`VideoNeflix`**: Nueva subclase de `ContenidoAudiovisual`. Añade funcionalidades específicas como identificar la exclusividad (`esOriginal`) y calidad de transmisión (`resolucion`), integrando arreglos de actores.
+* ** VideoNeflix**: Nueva subclase de `ContenidoAudiovisual`. Añade funcionalidades específicas como identificar la exclusividad (`esOriginal`) y calidad de transmisión (`resolucion`), integrando arreglos de actores.
 * **`VideoStriming`**: Nueva subclase de `ContenidoAudiovisual`. Orientada a cualquier servicio on-demand en general, añadiendo `plataforma` y `visualizaciones`. Soporta relaciones complejas guardando tanto actores como temporadas.
 
 ## Instrucciones para Clonar y Ejecutar el Proyecto
