@@ -9,8 +9,8 @@ import uni1a.ups.clases.adicionales.Temporada;
 public class VideoStriming extends ContenidoAudiovisual {
     private String plataforma;
     private int visualizaciones;
-    private final List<Actor> actores; // Agregación
-    private final List<Temporada> temporadas; // Composición
+    private final List<Actor> actores;
+    private final List<Temporada> temporadas;
 
     public VideoStriming(String titulo, int duracionEnMinutos, String genero, String plataforma, int visualizaciones) {
         super(titulo, duracionEnMinutos, genero);
@@ -21,11 +21,15 @@ public class VideoStriming extends ContenidoAudiovisual {
     }
 
     public void agregarActor(Actor actor) {
-        this.actores.add(actor);
+        if (actor != null) {
+            this.actores.add(actor);
+        }
     }
 
     public void agregarTemporada(Temporada temporada) {
-        this.temporadas.add(temporada);
+        if (temporada != null) {
+            this.temporadas.add(temporada);
+        }
     }
 
     public List<Actor> getActores() {
@@ -35,7 +39,6 @@ public class VideoStriming extends ContenidoAudiovisual {
     public List<Temporada> getTemporadas() {
         return temporadas;
     }
-
 
     public String getPlataforma() {
         return plataforma;

@@ -8,7 +8,7 @@ import uni1a.ups.clases.adicionales.Actor;
 public class VideoNeflix extends ContenidoAudiovisual {
     private boolean esOriginal;
     private String resolucion;
-    private final List<Actor> actores; // Agregación: El Video de Netflix tiene actores
+    private final List<Actor> actores;
 
     public VideoNeflix(String titulo, int duracionEnMinutos, String genero, boolean esOriginal, String resolucion) {
         super(titulo, duracionEnMinutos, genero);
@@ -18,13 +18,14 @@ public class VideoNeflix extends ContenidoAudiovisual {
     }
 
     public void agregarActor(Actor actor) {
-        this.actores.add(actor);
+        if (actor != null) {
+            this.actores.add(actor);
+        }
     }
 
     public List<Actor> getActores() {
         return actores;
     }
-
 
     public boolean isEsOriginal() {
         return esOriginal;
@@ -49,7 +50,7 @@ public class VideoNeflix extends ContenidoAudiovisual {
         System.out.println("Título: " + getTitulo());
         System.out.println("Duración en minutos: " + getDuracionEnMinutos());
         System.out.println("Género: " + getGenero());
-        System.out.println("¿Original?: " + (esOriginal ? "Sí" : "No"));
+        System.out.println("Original: " + (esOriginal ? "Sí" : "No"));
         System.out.println("Resolución: " + resolucion);
         System.out.println("Actores:");
         for (Actor actor : actores) {

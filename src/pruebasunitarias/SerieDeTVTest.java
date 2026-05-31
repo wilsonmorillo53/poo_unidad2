@@ -19,29 +19,29 @@ public class SerieDeTVTest {
         assertEquals("Breaking Bad", serie.getTitulo());
         assertEquals(49, serie.getDuracionEnMinutos());
         assertEquals("Drama", serie.getGenero());
-        assertEquals(5, serie.getTemporadas());
-        assertTrue(serie.getListaTemporadas().isEmpty());
+        assertEquals(5, serie.getNumeroDeTemporadas());
+        assertTrue(serie.getTemporadas().isEmpty());
     }
 
     @Test
-    public void testSetTemporadas() {
-        serie.setTemporadas(6);
-        assertEquals(6, serie.getTemporadas());
+    public void testSetNumeroDeTemporadas() {
+        serie.setNumeroDeTemporadas(6);
+        assertEquals(6, serie.getNumeroDeTemporadas());
     }
 
     @Test
     public void testAgregarTemporada() {
         Temporada temp = new Temporada(1, 7, serie);
         serie.agregarTemporada(temp);
-        assertEquals(1, serie.getListaTemporadas().size());
-        assertSame(temp, serie.getListaTemporadas().get(0));
+        assertEquals(1, serie.getTemporadas().size());
+        assertSame(temp, serie.getTemporadas().get(0));
     }
 
     @Test
     public void testAgregarMultiplesTemporadas() {
         serie.agregarTemporada(new Temporada(1, 7, serie));
         serie.agregarTemporada(new Temporada(2, 8, serie));
-        assertEquals(2, serie.getListaTemporadas().size());
+        assertEquals(2, serie.getTemporadas().size());
     }
 
     @Test

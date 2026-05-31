@@ -100,15 +100,15 @@ public class TestManejoArchivos {
         ContenidoAudiovisual s = nuevoServicio.obtenerContenidoPorId(1);
         if (s instanceof SerieDeTV) {
             SerieDeTV serie = (SerieDeTV) s;
-            System.out.println("Serie cargada: " + serie.getTitulo() + ", Temporadas declaradas: " + serie.getTemporadas() + ", ID: " + serie.getId());
+            System.out.println("Serie cargada: " + serie.getTitulo() + ", Temporadas declaradas: " + serie.getNumeroDeTemporadas() + ", ID: " + serie.getId());
             System.out.println("Lista de temporadas asociadas:");
-            for (var temp : serie.getListaTemporadas()) {
+            for (var temp : serie.getTemporadas()) {
                 System.out.println(" - Temporada " + temp.getNumero() + " con " + temp.getEpisodios() + " episodios. Serie asociada ID: " + (temp.getSerie() != null ? temp.getSerie().getId() : "null"));
             }
-            if (serie.getListaTemporadas().size() == 2) {
+            if (serie.getTemporadas().size() == 2) {
                 System.out.println(" ✓ Temporadas asociadas correctamente.");
             } else {
-                System.err.println(" ✗ ERROR: Se esperaban 2 temporadas, se encontraron: " + serie.getListaTemporadas().size());
+                System.err.println(" ✗ ERROR: Se esperaban 2 temporadas, se encontraron: " + serie.getTemporadas().size());
             }
         } else {
             System.err.println(" ✗ ERROR: No se encontró la serie con ID 1.");

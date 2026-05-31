@@ -274,9 +274,9 @@ public class ContenidoServiceTest {
         assertTrue(service.agregarTemporadaASerie(id, 1, 10));
 
         SerieDeTV serie = service.obtenerSerie(id);
-        assertEquals(1, serie.getListaTemporadas().size());
-        assertEquals(1, serie.getListaTemporadas().get(0).getNumero());
-        assertEquals(10, serie.getListaTemporadas().get(0).getEpisodios());
+        assertEquals(1, serie.getTemporadas().size());
+        assertEquals(1, serie.getTemporadas().get(0).getNumero());
+        assertEquals(10, serie.getTemporadas().get(0).getEpisodios());
     }
 
     @Test

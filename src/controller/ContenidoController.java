@@ -8,11 +8,6 @@ import uni1a.SerieDeTV;
 import uni1a.ups.clases.adicionales.Actor;
 import view.ConsoleView;
 
-/**
- * Controlador principal del sistema
- * Coordina las interacciones entre la Vista (View) y el Servicio (Service)
- * Implementa el patrón MVC
- */
 public class ContenidoController {
     private ContenidoService servicio;
     private ConsoleView vista;
@@ -22,47 +17,32 @@ public class ContenidoController {
         this.vista = new ConsoleView();
     }
 
-    /**
-     * Inicia el flujo principal de la aplicación
-     */
     public void iniciar() {
         autoCargarDatos();
         while (vista.estaActivo()) {
             int opcion = vista.mostrarMenuPrincipal();
-
-            switch (opcion) {
-                case 1:
-                    manejarContenido();
-                    break;
-                case 2:
-                    manejarActores();
-                    break;
-                case 3:
-                    manejarTemporadas();
-                    break;
-                case 4:
-                    manejarBusqueda();
-                    break;
-                case 5:
-                    mostrarEstadisticas();
-                    break;
-                case 6:
-                    listarTodoContenido();
-                    break;
-                case 7:
-                    guardarDatos();
-                    break;
-                case 8:
-                    cargarDatos();
-                    break;
-                case 0:
-                    vista.cerrar();
-                    vista.mostrarExito("¡Hasta luego!");
-                    break;
-                default:
-                    vista.mostrarError("Opción no válida");
-            }
+            procesarOpcionPrincipal(opcion);
         }
+    }
+
+    private void procesarOpcionPrincipal(int opcion) {
+        switch (opcion) {
+            case 1 -> manejarContenido();
+            case 2 -> manejarActores();
+            case 3 -> manejarTemporadas();
+            case 4 -> manejarBusqueda();
+            case 5 -> mostrarEstadisticas();
+            case 6 -> listarTodoContenido();
+            case 7 -> guardarDatos();
+            case 8 -> cargarDatos();
+            case 0 -> salir();
+            default -> vista.mostrarError("Opcion no valida");
+        }
+    }
+
+    private void salir() {
+        vista.cerrar();
+        vista.mostrarExito("¡Hasta luego!");
     }
 
     private void autoCargarDatos() {
@@ -70,143 +50,103 @@ public class ContenidoController {
         for (String carpeta : carpetasPosibles) {
             java.io.File dir = new java.io.File(carpeta);
             java.io.File archivoContenidos = new java.io.File(dir, "contenidos.csv");
-            if (archivoContenidos.exists()) {
-                if (servicio.cargarSistema(carpeta)) {
-                    vista.mostrarInfo("Se cargaron los datos automáticamente desde la carpeta: " + carpeta);
-                    vista.pausa();
-                    return;
-                }
+            if (archivoContenidos.exists() && servicio.cargarSistema(carpeta)) {
+                vista.mostrarInfo("Se cargaron los datos automaticamente desde la carpeta: " + carpeta);
+                vista.pausa();
+                return;
             }
         }
     }
-
-    // ==================== GESTIÓN DE CONTENIDO ====================
 
     private void manejarContenido() {
         boolean enMenu = true;
         while (enMenu) {
             int opcion = vista.mostrarMenuContenido();
-
-            switch (opcion) {
-                case 1:
-                    crearPelicula();
-                    break;
-                case 2:
-                    crearSerie();
-                    break;
-                case 3:
-                    crearDocumental();
-                    break;
-                case 4:
-                    crearVideoNeflix();
-                    break;
-                case 5:
-                    crearVideoStreaming();
-                    break;
-                case 6:
-                    actualizarContenido();
-                    break;
-                case 7:
-                    eliminarContenido();
-                    break;
-                case 0:
-                    enMenu = false;
-                    break;
-                default:
-                    vista.mostrarError("Opción no válida");
-            }
+            enMenu = procesarOpcionContenido(opcion);
         }
     }
 
-    private void crearPelicula() {
-        String titulo = vista.leerCadena("Título de la película: ");
-        int duracion = vista.leerEntero("Duración en minutos: ");
-        String genero = vista.leerCadena("Género: ");
-        String estudio = vista.leerCadena("Estudio productor: ");
+    private boolean procesarOpcionContenido(int opcion) {
+        switch (opcion) {
+            case 1 -> crearPelicula();
+            case 2 -> crearSerie();
+            case 3 -> crearDocumental();
+            case 4 -> crearVideoNeflix();
+            case 5 -> crearVideoStreaming();
+            case 6 -> actualizarContenido();
+            case 7 -> eliminarContenido();
+            case 0 -> {
+                return false;
+            }
+            default -> vista.mostrarError("Opcion no valida");
+        }
+        return true;
+    }
 
+    private void crearPelicula() {
+        String titulo = vista.leerCadena("Titulo de la pelicula: ");
+        int duracion = vista.leerEntero("Duracion en minutos: ");
+        String genero = vista.leerCadena("Genero: ");
+        String estudio = vista.leerCadena("Estudio productor: ");
         servicio.crearPelicula(titulo, duracion, genero, estudio);
-        vista.mostrarExito("Película creada exitosamente");
-        vista.pausa();
+        mostrarExitoPausa("Pelicula creada exitosamente");
     }
 
     private void crearSerie() {
-        String titulo = vista.leerCadena("Título de la serie: ");
-        int duracion = vista.leerEntero("Duración promedio por episodio (minutos): ");
-        String genero = vista.leerCadena("Género: ");
-        int numTemporadas = vista.leerEntero("Número de temporadas: ");
-
+        String titulo = vista.leerCadena("Titulo de la serie: ");
+        int duracion = vista.leerEntero("Duracion promedio por episodio (minutos): ");
+        String genero = vista.leerCadena("Genero: ");
+        int numTemporadas = vista.leerEntero("Numero de temporadas: ");
         servicio.crearSerie(titulo, duracion, genero, numTemporadas);
-        vista.mostrarExito("Serie creada exitosamente");
-        vista.pausa();
+        mostrarExitoPausa("Serie creada exitosamente");
     }
 
     private void crearDocumental() {
-        String titulo = vista.leerCadena("Título del documental: ");
-        int duracion = vista.leerEntero("Duración en minutos: ");
-        String genero = vista.leerCadena("Género: ");
+        String titulo = vista.leerCadena("Titulo del documental: ");
+        int duracion = vista.leerEntero("Duracion en minutos: ");
+        String genero = vista.leerCadena("Genero: ");
         String tema = vista.leerCadena("Tema principal: ");
-
         servicio.crearDocumental(titulo, duracion, genero, tema);
-        vista.mostrarExito("Documental creado exitosamente");
-        vista.pausa();
+        mostrarExitoPausa("Documental creado exitosamente");
     }
 
     private void crearVideoNeflix() {
-        String titulo = vista.leerCadena("Título del video Netflix: ");
-        int duracion = vista.leerEntero("Duración en minutos: ");
-        String genero = vista.leerCadena("Género: ");
+        String titulo = vista.leerCadena("Titulo del video Netflix: ");
+        int duracion = vista.leerEntero("Duracion en minutos: ");
+        String genero = vista.leerCadena("Genero: ");
         boolean esOriginal = vista.leerBooleano("¿Es original de Netflix?");
-        String resolucion = vista.leerCadena("Resolución (4K, 1080p, 720p, etc.): ");
-
+        String resolucion = vista.leerCadena("Resolucion (4K, 1080p, 720p, etc.): ");
         servicio.crearVideoNeflix(titulo, duracion, genero, esOriginal, resolucion);
-        vista.mostrarExito("Video Netflix creado exitosamente");
-        vista.pausa();
+        mostrarExitoPausa("Video Netflix creado exitosamente");
     }
 
     private void crearVideoStreaming() {
-        String titulo = vista.leerCadena("Título del video Streaming: ");
-        int duracion = vista.leerEntero("Duración en minutos: ");
-        String genero = vista.leerCadena("Género: ");
+        String titulo = vista.leerCadena("Titulo del video Streaming: ");
+        int duracion = vista.leerEntero("Duracion en minutos: ");
+        String genero = vista.leerCadena("Genero: ");
         String plataforma = vista.leerCadena("Plataforma (Amazon Prime, Disney+, etc.): ");
-        int visualizaciones = vista.leerEntero("Número de visualizaciones: ");
-
+        int visualizaciones = vista.leerEntero("Numero de visualizaciones: ");
         servicio.crearVideoStriming(titulo, duracion, genero, plataforma, visualizaciones);
-        vista.mostrarExito("Video Streaming creado exitosamente");
+        mostrarExitoPausa("Video Streaming creado exitosamente");
+    }
+
+    private void mostrarExitoPausa(String mensaje) {
+        vista.mostrarExito(mensaje);
         vista.pausa();
     }
 
     private void actualizarContenido() {
         listarTodoContenido();
         int id = vista.leerEntero("Ingresa el ID del contenido a actualizar: ");
-
         ContenidoAudiovisual contenido = servicio.obtenerContenidoPorId(id);
+
         if (contenido == null) {
             vista.mostrarError("Contenido no encontrado");
             return;
         }
 
-        System.out.println("\n¿Qué deseas actualizar?");
-        System.out.println("1. Título");
-        System.out.println("2. Duración");
-        System.out.println("3. Género");
-
-        int opcion = vista.leerEntero("Selecciona: ");
-        boolean exito = false;
-
-        switch (opcion) {
-            case 1:
-                String nuevoTitulo = vista.leerCadena("Nuevo título: ");
-                exito = servicio.actualizarTitulo(id, nuevoTitulo);
-                break;
-            case 2:
-                int nuevaDuracion = vista.leerEntero("Nueva duración (minutos): ");
-                exito = servicio.actualizarDuracion(id, nuevaDuracion);
-                break;
-            case 3:
-                String nuevoGenero = vista.leerCadena("Nuevo género: ");
-                exito = servicio.actualizarGenero(id, nuevoGenero);
-                break;
-        }
+        int opcion = mostrarMenuActualizacion();
+        boolean exito = ejecutarActualizacion(id, opcion);
 
         if (exito) {
             vista.mostrarExito("Contenido actualizado exitosamente");
@@ -216,10 +156,26 @@ public class ContenidoController {
         vista.pausa();
     }
 
+    private int mostrarMenuActualizacion() {
+        System.out.println("\n¿Qué deseas actualizar?");
+        System.out.println("1. Título");
+        System.out.println("2. Duración");
+        System.out.println("3. Género");
+        return vista.leerEntero("Selecciona: ");
+    }
+
+    private boolean ejecutarActualizacion(int id, int opcion) {
+        return switch (opcion) {
+            case 1 -> servicio.actualizarTitulo(id, vista.leerCadena("Nuevo titulo: "));
+            case 2 -> servicio.actualizarDuracion(id, vista.leerEntero("Nueva duracion (minutos): "));
+            case 3 -> servicio.actualizarGenero(id, vista.leerCadena("Nuevo genero: "));
+            default -> false;
+        };
+    }
+
     private void eliminarContenido() {
         listarTodoContenido();
         int id = vista.leerEntero("Ingresa el ID del contenido a eliminar: ");
-
         if (servicio.eliminarContenido(id)) {
             vista.mostrarExito("Contenido eliminado exitosamente");
         } else {
@@ -228,39 +184,32 @@ public class ContenidoController {
         vista.pausa();
     }
 
-    // ==================== GESTIÓN DE ACTORES ====================
-
     private void manejarActores() {
         boolean enMenu = true;
         while (enMenu) {
             int opcion = vista.mostrarMenuActores();
-
-            switch (opcion) {
-                case 1:
-                    crearActor();
-                    break;
-                case 2:
-                    listarActores();
-                    break;
-                case 3:
-                    agregarActorAPelicula();
-                    break;
-                case 0:
-                    enMenu = false;
-                    break;
-                default:
-                    vista.mostrarError("Opción no válida");
-            }
+            enMenu = procesarOpcionActores(opcion);
         }
+    }
+
+    private boolean procesarOpcionActores(int opcion) {
+        switch (opcion) {
+            case 1 -> crearActor();
+            case 2 -> listarActores();
+            case 3 -> agregarActorAPelicula();
+            case 0 -> {
+                return false;
+            }
+            default -> vista.mostrarError("Opcion no valida");
+        }
+        return true;
     }
 
     private void crearActor() {
         String nombre = vista.leerCadena("Nombre del actor: ");
         String apellido = vista.leerCadena("Apellido del actor: ");
-
         servicio.crearActor(nombre, apellido);
-        vista.mostrarExito("Actor creado exitosamente");
-        vista.pausa();
+        mostrarExitoPausa("Actor creado exitosamente");
     }
 
     private void listarActores() {
@@ -270,11 +219,10 @@ public class ContenidoController {
 
     private void agregarActorAPelicula() {
         listarTodoContenido();
-        int idPelicula = vista.leerEntero("Ingresa el ID de la película: ");
+        int idPelicula = vista.leerEntero("Ingresa el ID de la pelicula: ");
 
-        ContenidoAudiovisual contenido = servicio.obtenerContenidoPorId(idPelicula);
-        if (!(contenido instanceof Pelicula)) {
-            vista.mostrarError("El contenido seleccionado no es una película");
+        if (!esPelicula(idPelicula)) {
+            vista.mostrarError("El contenido seleccionado no es una pelicula");
             vista.pausa();
             return;
         }
@@ -282,57 +230,58 @@ public class ContenidoController {
         listarActores();
         String nombre = vista.leerCadena("Nombre del actor a añadir: ");
         String apellido = vista.leerCadena("Apellido del actor: ");
-
         Actor actor = servicio.buscarActor(nombre, apellido);
+
         if (actor == null) {
-            vista.mostrarAdvertencia("Actor no encontrado. Créalo primero");
+            vista.mostrarAdvertencia("Actor no encontrado. Cralo primero");
             return;
         }
 
         if (servicio.agregarActorAPelicula(idPelicula, actor)) {
-            vista.mostrarExito("Actor añadido a la película exitosamente");
+            vista.mostrarExito("Actor añadido a la pelicula exitosamente");
         } else {
             vista.mostrarError("No se pudo añadir el actor");
         }
         vista.pausa();
     }
 
-    // ==================== GESTIÓN DE TEMPORADAS ====================
+    private boolean esPelicula(int id) {
+        return servicio.obtenerContenidoPorId(id) instanceof Pelicula;
+    }
 
     private void manejarTemporadas() {
         boolean enMenu = true;
         while (enMenu) {
             int opcion = vista.mostrarMenuTemporadas();
-
-            switch (opcion) {
-                case 1:
-                    agregarTemporada();
-                    break;
-                case 2:
-                    verTemporadas();
-                    break;
-                case 0:
-                    enMenu = false;
-                    break;
-                default:
-                    vista.mostrarError("Opción no válida");
-            }
+            enMenu = procesarOpcionTemporadas(opcion);
         }
+    }
+
+    private boolean procesarOpcionTemporadas(int opcion) {
+        switch (opcion) {
+            case 1 -> agregarTemporada();
+            case 2 -> verTemporadas();
+            case 0 -> {
+                return false;
+            }
+            default -> vista.mostrarError("Opcion no valida");
+        }
+        return true;
     }
 
     private void agregarTemporada() {
         listarTodoContenido();
         int idSerie = vista.leerEntero("Ingresa el ID de la serie: ");
-
         SerieDeTV serie = servicio.obtenerSerie(idSerie);
+
         if (serie == null) {
             vista.mostrarError("La serie no existe o el contenido no es una serie");
             vista.pausa();
             return;
         }
 
-        int numeroTemporada = vista.leerEntero("Número de temporada: ");
-        int episodios = vista.leerEntero("Número de episodios: ");
+        int numeroTemporada = vista.leerEntero("Numero de temporada: ");
+        int episodios = vista.leerEntero("Numero de episodios: ");
 
         if (servicio.agregarTemporadaASerie(idSerie, numeroTemporada, episodios)) {
             vista.mostrarExito("Temporada añadida exitosamente");
@@ -345,8 +294,8 @@ public class ContenidoController {
     private void verTemporadas() {
         listarTodoContenido();
         int idSerie = vista.leerEntero("Ingresa el ID de la serie: ");
-
         SerieDeTV serie = servicio.obtenerSerie(idSerie);
+
         if (serie == null) {
             vista.mostrarError("La serie no existe o el contenido no es una serie");
             vista.pausa();
@@ -356,81 +305,70 @@ public class ContenidoController {
         vista.mostrarDetallesContenido(serie);
     }
 
-    // ==================== BÚSQUEDA Y FILTRADO ====================
-
     private void manejarBusqueda() {
         boolean enMenu = true;
         while (enMenu) {
             int opcion = vista.mostrarMenuBusqueda();
-
-            switch (opcion) {
-                case 1:
-                    buscarPorTitulo();
-                    break;
-                case 2:
-                    buscarPorGenero();
-                    break;
-                case 3:
-                    buscarPorTipo();
-                    break;
-                case 4:
-                    obtenerPorId();
-                    break;
-                case 0:
-                    enMenu = false;
-                    break;
-                default:
-                    vista.mostrarError("Opción no válida");
-            }
+            enMenu = procesarOpcionBusqueda(opcion);
         }
     }
 
+    private boolean procesarOpcionBusqueda(int opcion) {
+        switch (opcion) {
+            case 1 -> buscarPorTitulo();
+            case 2 -> buscarPorGenero();
+            case 3 -> buscarPorTipo();
+            case 4 -> obtenerPorId();
+            case 0 -> {
+                return false;
+            }
+            default -> vista.mostrarError("Opcion no valida");
+        }
+        return true;
+    }
+
     private void buscarPorTitulo() {
-        String titulo = vista.leerCadena("Ingresa el título a buscar: ");
+        String titulo = vista.leerCadena("Ingresa el titulo a buscar: ");
         List<ContenidoAudiovisual> resultados = servicio.buscarPorTitulo(titulo);
         vista.mostrarContenidos(resultados);
     }
 
     private void buscarPorGenero() {
-        String genero = vista.leerCadena("Ingresa el género a buscar: ");
+        String genero = vista.leerCadena("Ingresa el genero a buscar: ");
         List<ContenidoAudiovisual> resultados = servicio.buscarPorGenero(genero);
         vista.mostrarContenidos(resultados);
     }
 
     private void buscarPorTipo() {
+        int opcion = mostrarMenuTipos();
+        String tipo = seleccionarTipo(opcion);
+        if (tipo == null) {
+            vista.mostrarError("Tipo no va  lido");
+            return;
+        }
+        List<ContenidoAudiovisual> resultados = servicio.buscarPorTipo(tipo);
+        vista.mostrarContenidos(resultados);
+    }
+
+    private int mostrarMenuTipos() {
         System.out.println("\nTipos disponibles:");
         System.out.println("1. Pelicula");
         System.out.println("2. SerieDeTV");
         System.out.println("3. Documental");
         System.out.println("4. VideoNeflix");
         System.out.println("5. VideoStriming");
+        return vista.leerEntero("Selecciona el tipo: ");
+    }
 
-        int opcion = vista.leerEntero("Selecciona el tipo: ");
-        String tipo = "";
-
-        switch (opcion) {
-            case 1:
-                tipo = "Pelicula";
-                break;
-            case 2:
-                tipo = "SerieDeTV";
-                break;
-            case 3:
-                tipo = "Documental";
-                break;
-            case 4:
-                tipo = "VideoNeflix";
-                break;
-            case 5:
-                tipo = "VideoStriming";
-                break;
-            default:
-                vista.mostrarError("Tipo no válido");
-                return;
-        }
-
-        List<ContenidoAudiovisual> resultados = servicio.buscarPorTipo(tipo);
-        vista.mostrarContenidos(resultados);
+    private String seleccionarTipo(int opcion) {
+        return switch (opcion) {
+            case 1 -> "Pelicula";
+            case 2 -> "SerieDeTV";
+            case 3 -> "Documental";
+            case 4 -> "VideoNeflix";
+            case 5 -> "VideoStriming";
+            default -> null;
+        };
     }
 
     private void obtenerPorId() {
@@ -444,8 +382,6 @@ public class ContenidoController {
             vista.pausa();
         }
     }
-
-    // ==================== UTILIDADES ====================
 
     private void listarTodoContenido() {
         List<ContenidoAudiovisual> contenidos = servicio.obtenerTodosLosContenidos();
