@@ -1,10 +1,10 @@
 
-package poo;
+package Main;
 
 import controller.ContenidoController;
 
 
-public class PruebaAudioVisual {
+public class Main {
     public static void main(String[] args) {
         System.out.println("=============================================");
         System.out.println("   Sistema de Gestion Audiovisual - MVC    ");
