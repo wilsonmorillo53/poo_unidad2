@@ -1,12 +1,12 @@
 package controller;
 
+import Vista.ConsoleView;
 import java.util.List;
 import service.ContenidoService;
 import uni1a.ContenidoAudiovisual;
 import uni1a.Pelicula;
 import uni1a.SerieDeTV;
 import uni1a.ups.clases.adicionales.Actor;
-import view.ConsoleView;
 
 public class ContenidoController {
     private ContenidoService servicio;
