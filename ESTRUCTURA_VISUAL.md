@@ -13,8 +13,8 @@ poo_unidad2/
 │
 ├── 📁 src/                               # Código fuente
 │   │
-│   ├── 📁 poo/                           # 🚀 PUNTO DE ENTRADA
-│   │   └── PruebaAudioVisual.java        # main() - Inicia la aplicación
+│   ├── 📁 Main/                           # 🚀 PUNTO DE ENTRADA
+│   │   └── Main.java        # main() - Inicia la aplicación
 │   │
 │   ├── 📁 controller/                    # 🎛️ CONTROLLER LAYER (NUEVO)
 │   │   └── ContenidoController.java      # Coordinador MVC central
