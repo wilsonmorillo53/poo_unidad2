@@ -45,6 +45,18 @@ public abstract class ContenidoAudiovisual {
     public int getId() {
         return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public static int getContar() {
+        return contar;
+    }
+
+    public static void setContar(int valor) {
+        contar = valor;
+    }
     
     public abstract void mostrarDetalles();
 }

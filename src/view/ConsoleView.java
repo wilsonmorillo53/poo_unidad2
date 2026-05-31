@@ -37,6 +37,8 @@ public class ConsoleView {
         System.out.println("4. Búsqueda y Filtrado");
         System.out.println("5. Ver Estadísticas");
         System.out.println("6. Listar Todo el Contenido");
+        System.out.println("7. Guardar Datos (CSV)");
+        System.out.println("8. Cargar Datos (CSV)");
         System.out.println("0. Salir\n");
         return leerOpcion();
     }

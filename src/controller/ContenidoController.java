@@ -26,6 +26,7 @@ public class ContenidoController {
      * Inicia el flujo principal de la aplicación
      */
     public void iniciar() {
+        autoCargarDatos();
         while (vista.estaActivo()) {
             int opcion = vista.mostrarMenuPrincipal();
 
@@ -48,12 +49,33 @@ public class ContenidoController {
                 case 6:
                     listarTodoContenido();
                     break;
+                case 7:
+                    guardarDatos();
+                    break;
+                case 8:
+                    cargarDatos();
+                    break;
                 case 0:
                     vista.cerrar();
                     vista.mostrarExito("¡Hasta luego!");
                     break;
                 default:
                     vista.mostrarError("Opción no válida");
+            }
+        }
+    }
+
+    private void autoCargarDatos() {
+        String[] carpetasPosibles = {"data", "datosp"};
+        for (String carpeta : carpetasPosibles) {
+            java.io.File dir = new java.io.File(carpeta);
+            java.io.File archivoContenidos = new java.io.File(dir, "contenidos.csv");
+            if (archivoContenidos.exists()) {
+                if (servicio.cargarSistema(carpeta)) {
+                    vista.mostrarInfo("Se cargaron los datos automáticamente desde la carpeta: " + carpeta);
+                    vista.pausa();
+                    return;
+                }
             }
         }
     }
@@ -432,6 +454,32 @@ public class ContenidoController {
 
     private void mostrarEstadisticas() {
         System.out.println(servicio.obtenerEstadisticas());
+        vista.pausa();
+    }
+
+    private void guardarDatos() {
+        String carpeta = vista.leerCadena("Ingresa el nombre de la carpeta para guardar los datos (ej: data): ");
+        if (carpeta.isBlank()) {
+            carpeta = "data";
+        }
+        if (servicio.guardarSistema(carpeta)) {
+            vista.mostrarExito("Datos guardados exitosamente en la carpeta: " + carpeta);
+        } else {
+            vista.mostrarError("Error al guardar los datos en la carpeta: " + carpeta);
+        }
+        vista.pausa();
+    }
+
+    private void cargarDatos() {
+        String carpeta = vista.leerCadena("Ingresa el nombre de la carpeta de donde cargar los datos (ej: data): ");
+        if (carpeta.isBlank()) {
+            carpeta = "data";
+        }
+        if (servicio.cargarSistema(carpeta)) {
+            vista.mostrarExito("Datos cargados exitosamente desde la carpeta: " + carpeta);
+        } else {
+            vista.mostrarError("Error al cargar los datos desde la carpeta (puede que no exista o falten archivos): " + carpeta);
+        }
         vista.pausa();
     }
 }

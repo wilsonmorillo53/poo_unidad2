@@ -1,7 +1,16 @@
 package service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import uni1a.ContenidoAudiovisual;
 import uni1a.Documental;
@@ -9,6 +18,7 @@ import uni1a.Pelicula;
 import uni1a.SerieDeTV;
 import uni1a.ups.clases.adicionales.Actor;
 import uni1a.ups.clases.adicionales.Temporada;
+import uni1a.ups.clases.adicionales.Investigador;
 import ups.expancion.VideoNeflix;
 import ups.expancion.VideoStriming;
 
@@ -212,6 +222,7 @@ public class ContenidoService {
     private void limpiarSistema() {
         contenidos.clear();
         actores.clear();
+        ContenidoAudiovisual.setContar(0);
     }
 
     private void guardarContenidos(File file) throws IOException {
@@ -230,7 +241,7 @@ public class ContenidoService {
                 if (contenido instanceof Pelicula) {
                     estudio = ((Pelicula) contenido).getEstudio();
                 } else if (contenido instanceof SerieDeTV) {
-                    temporadas = String.valueOf(((SerieDeTV) contenido).getTemporadas().size());
+                    temporadas = String.valueOf(((SerieDeTV) contenido).getTemporadas());
                 } else if (contenido instanceof Documental) {
                     tema = ((Documental) contenido).getTema();
                 } else if (contenido instanceof VideoNeflix) {
@@ -267,7 +278,26 @@ public class ContenidoService {
             for (Actor actor : actores) {
                 String contenidoId = "";
                 String contenidoTipo = "";
-                if (actor.getPelicula() != null) {
+                
+                // Buscar el contenido al que pertenece el actor (soporta Pelicula, VideoNeflix, VideoStriming)
+                ContenidoAudiovisual ref = null;
+                for (ContenidoAudiovisual c : contenidos) {
+                    if (c instanceof Pelicula && ((Pelicula) c).getActores().contains(actor)) {
+                        ref = c;
+                        break;
+                    } else if (c instanceof VideoNeflix && ((VideoNeflix) c).getActores().contains(actor)) {
+                        ref = c;
+                        break;
+                    } else if (c instanceof VideoStriming && ((VideoStriming) c).getActores().contains(actor)) {
+                        ref = c;
+                        break;
+                    }
+                }
+                
+                if (ref != null) {
+                    contenidoId = String.valueOf(ref.getId());
+                    contenidoTipo = ref.getClass().getSimpleName();
+                } else if (actor.getPelicula() != null) {
                     contenidoId = String.valueOf(actor.getPelicula().getId());
                     contenidoTipo = actor.getPelicula().getClass().getSimpleName();
                 }
@@ -288,7 +318,7 @@ public class ContenidoService {
             for (ContenidoAudiovisual contenido : contenidos) {
                 if (contenido instanceof SerieDeTV) {
                     SerieDeTV serie = (SerieDeTV) contenido;
-                    for (Temporada temporada : serie.getTemporadas()) {
+                    for (Temporada temporada : serie.getListaTemporadas()) {
                         writer.println(String.join(",",
                                 csvQuote(String.valueOf(temporada.getNumero())),
                                 csvQuote(String.valueOf(temporada.getEpisodios())),
@@ -375,6 +405,11 @@ public class ContenidoService {
                         continue;
                 }
 
+                contenido.setId(id);
+                if (id >= ContenidoAudiovisual.getContar()) {
+                    ContenidoAudiovisual.setContar(id + 1);
+                }
+
                 contenidos.add(contenido);
                 idMap.put(id, contenido);
             }
@@ -437,10 +472,12 @@ public class ContenidoService {
                     continue;
                 }
 
-                Temporada temporada = new Temporada(numero, episodios);
                 if (contenido instanceof SerieDeTV) {
-                    ((SerieDeTV) contenido).agregarTemporada(temporada);
+                    SerieDeTV serie = (SerieDeTV) contenido;
+                    Temporada temporada = new Temporada(numero, episodios, serie);
+                    serie.agregarTemporada(temporada);
                 } else if (contenido instanceof VideoStriming) {
+                    Temporada temporada = new Temporada(numero, episodios, null);
                     ((VideoStriming) contenido).agregarTemporada(temporada);
                 }
             }
@@ -463,7 +500,7 @@ public class ContenidoService {
                 int contenidoId = Integer.parseInt(tokens[2]);
                 ContenidoAudiovisual contenido = idMap.get(contenidoId);
                 if (contenido instanceof Documental) {
-                    Investigador investigador = new Investigador(nombre, especialidad);
+                    Investigador investigador = new Investigador(nombre, especialidad, (Documental) contenido);
                     ((Documental) contenido).agregarInvestigador(investigador);
                 }
             }
